@@ -31,22 +31,13 @@ def column_names(soup):
 # function to call sybols listed. 
 
 def column_ticker_func(soup):
-    bs_symbol_elements=soup.find_all('a',href=re.compile(r'https://www.nseindia.com/get*'))
-    symbol_elements=[]
-    for element in bs_symbol_elements:
-        symbol_elements_temp=element.text.strip()
-        symbol_elements.append(symbol_elements_temp)
-    return symbol_elements
-    
+    elements = soup.css.select('div.mw-heading + table tr > td:nth-child(1) > a[href^="https://www.nseindia.com/get"]')
+    return [element.text.strip() for element in elements]
 
 # function to get the corresponding company name
 def column_company_name_func(soup):
-    bs_company_name=soup.find_all('tr')
-    company_name_elements=[]
-    for elements in bs_company_name[2:]:
-        company_name_temp=elements.text.strip().split('\n')
-        company_name_elements.append(company_name_temp)
-    return company_name_elements  # excluding the first two header rows
+    elements = soup.css.select('div.mw-heading + table tr > td:nth-child(2)')
+    return [element.text.strip() for element in elements]  # excluding the first two header rows
     
 
 # calling the function request_to_webpage and getting the soup object
@@ -58,4 +49,10 @@ column_name_output=column_names(soup=soup_output)  # column name output as colum
 symbol_elements_output=column_ticker_func(soup=soup_output)  # list of symbols
 
 company_elements_output=column_company_name_func(soup=soup_output)  # list of company names
-print(company_elements_output)
+
+data_lookup={column_name_output[0]:company_elements_output,
+             column_name_output[1]:symbol_elements_output}
+
+df_stocks_lookup=pd.DataFrame(data_lookup)
+
+print(df_stocks_lookup.tail())
