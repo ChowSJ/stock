@@ -54,5 +54,3 @@ data_lookup={column_name_output[0]:company_elements_output,
              column_name_output[1]:symbol_elements_output}
 
 df_stocks_lookup=pd.DataFrame(data_lookup)
-
-print(df_stocks_lookup.tail())
